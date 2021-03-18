@@ -71,16 +71,28 @@ function Build-PlaylistFile($CacheMs, $SMBPath, $File)
     } else {
         $Cache = '#EXTVLCOPT:network-caching=' + $CacheMs.ToString()
     }
-    $EXTINF = '#EXTINF'
+    $PyArg = '\\' + $SMBPath.Trim('smb://')
+    $PyFile = (Get-ChildItem -Path .\ -Recurse -Exclude "venv/" -Include "*.py" | Where-Object -Property 'Name' -Like -Value "Get_Media_Tag.*" | Select-Object -Property 'FullName').FullName
+    $PyVal = python.exe "$PyFile" "$PyArg"
+    $PyVal
+    $EXTINF = '#EXTINF:' + $PyVal
     Add-Content -Value $EXTINF -Path $File -Encoding UTF8 -PassThru
     Add-Content -Value $Cache -Path $File -Encoding UTF8 -PassThru
     Add-Content -Value $SMBPath -Path $File -Encoding UTF8 -PassThru
 }
 
+$OldLocation = (Get-Location).Path
+$Location = $PSScriptRoot.ToString()
+$PyReqs = Get-ChildItem -Path .\ -Recurse -Exclude "venv/" -Include "*.txt" | Where-Object -Property 'Name' -Like -Value "PythonReq*.txt" | Select-Object -Property 'FullName','DirectoryName'
+$PyEnv = Get-ChildItem -Path .\ -Recurse -Exclude "__pycache_*" -Include "*.ps1" | Where-Object -Property 'Name' -Like -Value "activate.*" | Select-Object -Property 'FullName'
+$PyReq = $PyReqs.FullName
+Set-Location -Path $Location
+Invoke-Expression -Command $PyEnv
+python -m pip install -r $PyReq --upgrade
 $ServerName = Read-Host -Prompt 'Server Name for the share'
 $ShareName = Read-Host -Prompt 'Share Name'
-$OldLocation = Get-Location
 $Path = '\\' + $ServerName + '\' + $ShareName
 $File = Get-SaveFileDialog -DefaultExt 'm3u8' -Title 'Save m3u8 playlist file'
 Out-File -FilePath $File
 Loop-Directory -Path $Path
+deactivate
