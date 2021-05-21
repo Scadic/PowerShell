@@ -7,7 +7,7 @@ function Get-FolderDialog($InitDir, $Title)
     {
         $DirBrowser.SelectedPath = $InitDir
     } else {
-        $DirBrowser.SelectedPath = Get-Location
+        $DirBrowser.SelectedPath = (Get-Location).Path
     }
     [void] $DirBrowser.ShowDialog()
     while (-not $DirBrowser.SelectedPath)
