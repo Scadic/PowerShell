@@ -1,0 +1,6 @@
+﻿Function Get-SmbOpenFiles
+{
+
+    
+
+}
