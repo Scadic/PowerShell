@@ -50,7 +50,7 @@
             Mandatory = $False,
             HelpMessage = "Number of decimal places.",
             Position = 1,
-            ValueFromPipeline = 1
+            ValueFromPipeline = $False
             )
         ]
         [System.Int64] $DecimalPlaces = 2

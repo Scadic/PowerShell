@@ -71,7 +71,7 @@
             $ADUser = Get-ADUser -Filter "SamAccountName -Like `"$($User)`"" -Properties PasswordLastSet,'msDS-UserPasswordExpiryTimeComputed'
             If ($ADUser)
             {
-                $Obj = @{
+                $Obj = [PSCustomObject]@{
                     SamAccountName = $ADUser.SamAccountName;
                     PasswordLastSet = $ADUser.PasswordLastSet;
                     PasswordExpiryDate = [DateTime]::FromFileTime($ADUser.'msDS-UserPasswordExpiryTimeComputed')
