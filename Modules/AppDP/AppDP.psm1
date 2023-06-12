@@ -15,13 +15,13 @@ If (($PSVersionTable.PSVersion.Major -Le 2 -And $PSVersionTable.PSVersion.Minor 
 $FunctionPath = "$PSScriptRoot\Functions\"
 
 # Get a list of all function file names
-$FunctionList = Get-ChildItem -Path $FunctionPath -Name
+$FunctionList = (Get-ChildItem -Path "$($PSScriptRoot)\Functions\" -Recurse -Filter "*.ps1" | Resolve-Path -Relative) -Replace '^\.\\', ''
 
 # Loop over all the function files and dot source them into memory
 ForEach ($Function in $FunctionList)
 {
 
-    . ($FunctionPath + $Function)
+    . (Join-Path -Path $PSScriptRoot -ChildPath $Function)
 
 }
 
