@@ -3,6 +3,43 @@
 
     <#
 
+        .SYNOPSIS
+        Copy an AD Group from a trusted domain to the domain of this computer.
+
+        .DESCRIPTION
+        Copies AD Groups from a trusted domain to the domain that this computer is joined to.
+
+        .PARAMETER $Identity
+        Optional: CN/Name/SamAccountName of the AD group to copy
+
+        .PARAMETER $Filter
+        Optional: Filter string to search for ADGroups to copy.
+
+        .PARAMETER $LDAPFilter
+        Optional: LDAP Filter string to search for ADGroups to copy.
+
+        .PARAMETER $DomainName
+        Required: The domain name from where the group will be copied from.
+
+        .PARAMETER $OUPath
+        Optional: DN of the Container/OU where the group will be created.
+
+        .INPUTS
+        This function accepts either a String or String[] as input.
+
+        .OUTPUTS
+        Returns a collection of all the created groups.
+
+        .EXAMPLE
+        Copy-ADGroupFromDomain -Identity 'ServiceAccounts' -DomainName contoso.com -OUPath 'OU=Groups,OU=contoso,DC=contoso,DC=com'
+
+        Copy the group 'ServiceAccounts' to the Groups OU in the contoso.com domain.
+
+        .EXAMPLE
+        'Remote Users','OnPrem Users' | Copy-ADGroupFromDomain -DomainName contoso.local -OUPath 'CN=Users,DC=contoso,DC=local'
+
+        Using pipe to send an Array of values into the function to find and create two new ADGroups.
+
     #>
 
     [CmdletBinding()]
