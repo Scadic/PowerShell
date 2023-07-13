@@ -29,6 +29,8 @@
             default {$OSArch = ".x64"}
         }
 
+        $OldProgressPreference = $ProgressPreference
+        $ProgressPreference = 'SilentlyContinue'
         $OldSecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol
         $AllProtocols = [System.Net.SecurityProtocolType]'Ssl3,Tls,Tls11,Tls12'
         [System.Net.ServicePointManager]::SecurityProtocol = $AllProtocols
@@ -39,8 +41,9 @@
         $Uri = "https://notepad-plus-plus.org/downloads" + $($Req.Links | Where-Object -FilterScript {$_.outerText -Like "Current Version *"} | Select-Object -ExpandProperty href) -Replace '/downloads/downloads/','/downloads/'
         $Req = Invoke-WebRequest -Uri $Uri
         $Uri = $Req.Links | Where-Object -FilterScript {$_.outerText -Eq "Installer"} | Where-Object -FilterScript {$_.href -Like "*/npp.*.Installer$($OSArch).exe"} | Select-Object -ExpandProperty href
-        Invoke-WebRequest -Uri $Uri -OutFile "$($env:TEMP)\NppSetup.exe"
+        Invoke-WebRequest -Uri $Uri -OutFile "$($env:TEMP)\NppSetup.exe" -UseBasicParsing
 
+        $ProgressPreference = $OldProgressPreference
         [System.Net.ServicePointManager]::SecurityProtocol = $OldSecurityProtocol
 
     }

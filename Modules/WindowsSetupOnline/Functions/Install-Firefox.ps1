@@ -14,16 +14,13 @@
             )
         ]
         [ValidateSet(
-            "en-AU",
-            "en-CA",
-            "en-IE",
-            "en-NZ",
-            "en-US",
-            "nb-NO",
-            "nn-NO"
+            "ach","af","sq","ar","an","hy-AM","as","ast","az","eu","be","bn-BD","bn-IN","bs","br","bg","ca","zh-CN","zh-TW","hr","cs","da","nl","en-GB","en-US","en-ZA","eo","et",
+            "fi","fr","fy-NL","ff","gd","gl","de","el","gu-IN","he","hi-IN","hu","is","id","ga-IE","it","kn","kk","km","ko","lv","lij","lt","dsb","mk","mai","ms","ml","mr",
+            "nb-NO","nn-NO","or","fa","pl","pt-BR","pt-PT","pa-IN","ro","rm","ru","sr","si","sk","sl","son","es-AR","es-CL","es-MX","es-ES","sv-SE","ta","te","th","tr","uk",
+            "hsb","uz","vi","cy","xh"
             )
         ]
-        [System.String] $Lang = "en-US",
+        [System.String] $Lang = "$(If (Get-PreferredLanguage -ErrorAction Ignore -WarningAction Ignore){Get-PreferredLanguage}Else{"en-US"})",
         [Parameter(
             Mandatory = $False,
             HelpMessage = "Override OS Architecture.",
@@ -49,14 +46,17 @@
 
         }
         
+        $OldProgressPreference = $ProgressPreference
+        $ProgressPreference = 'SilentlyContinue'
         $OldSecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol
         $AllProtocols = [System.Net.SecurityProtocolType]'Ssl3,Tls,Tls11,Tls12'
         [System.Net.ServicePointManager]::SecurityProtocol = $AllProtocols
 
         Write-Host -NoNewline -Object "`rAttempting to download Firefox setup..." -ForegroundColor Yellow
 
-        Invoke-WebRequest -Uri "https://download.mozilla.org/?product=firefox-latest&os=$($OSArch)&lang=$($Lang)" -OutFile "$($env:TEMP)\FirefoxSetup.exe"
+        Invoke-WebRequest -Uri "https://download.mozilla.org/?product=firefox-latest&os=$($OSArch)&lang=$($Lang)" -OutFile "$($env:TEMP)\FirefoxSetup.exe" -UseBasicParsing
         
+        $ProgressPreference = $OldProgressPreference
         [System.Net.ServicePointManager]::SecurityProtocol = $OldSecurityProtocol
 
     }

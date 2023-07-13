@@ -48,22 +48,36 @@
                 CurrentOperation  = "Processing users"
             }
             Write-Progress @UserNamesLoopProgressParameters
-            If ($GroupNames[$I])
+            If ($GroupNames -And $GroupNames[$I])
             {
                 Write-Verbose -Message "Creating custom group `"$($GroupNames[$I])`""
                 $Group = New-ADGroup -Description "Group of Computers allowed to retrieve the password for $($UserName)" -DisplayName "$($GroupNames[$I])" -GroupCategory Security -GroupScope Universal `
                 -Name "$($GroupNames[$I])" -Path $(If (Get-ADOrganizationalUnit -Filter "Name -Like `"*Password Groups`""){$(Get-ADOrganizationalUnit -Filter "Name -Like `"*Password Groups`"" | Select-Object -ExpandProperty DistinguishedName)}Else{$(Get-ADOrganizationalUnit -Filter "Name -Like `"Groups`"" | Select-Object -ExpandProperty DistinguishedName)})`
-                -SamAccountName "$($GroupNames[$I])" -PassThru -WhatIf
+                -SamAccountName "$($GroupNames[$I])" -PassThru
             }
             Else
             {
                 Write-Host -Object "Creating standard group"
                 $Group = New-ADGroup -Description "Group of Computers allowed to retrieve the password for $($UserName)" -DisplayName "$($UserName)_PwdGroup" -GroupCategory Security -GroupScope Universal `
                 -Name "$($UserName)_PwdGroup" -Path $(If (Get-ADOrganizationalUnit -Filter "Name -Like `"*Password Groups`""){$(Get-ADOrganizationalUnit -Filter "Name -Like `"*Password Groups`"" | Select-Object -ExpandProperty DistinguishedName)}Else{$(Get-ADOrganizationalUnit -Filter "Name -Like `"Groups`"" | Select-Object -ExpandProperty DistinguishedName)})`
-                -SamAccountName "$($UserName)_PwdGroup" -PassThru -WhatIf
+                -SamAccountName "$($UserName)_PwdGroup" -PassThru
             }
 
-            Clear-Variable -Name ADGroup -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
+            If ($Group.Name)
+            {
+                $User = New-ADServiceAccount -PrincipalsAllowedToRetrieveManagedPassword $Group -Name $UserName -Description "gMSA Account $UserName" -Enabled $True -KerberosEncryptionType RC4,AES128,AES256 -ManagedPasswordIntervalInDays 30 -SamAccountName $UserName -TrustedForDelegation $True -PassThru
+            }
+
+            If ($Group.Name -And $User.SamAccountName)
+            {
+                $Obj = [PSCustomObject]@{
+                    ADUser = $User;
+                    ADGroup = $Group
+                }
+                [Void] $Result.Add($Obj)
+            }
+
+            Clear-Variable -Name Group,User -ErrorAction SilentlyContinue -WarningAction SilentlyContinue
             $I++
             # Progress
             $UserNamesLoopProgressParameters = @{
@@ -75,6 +89,11 @@
             }
             Write-Progress @UserNamesLoopProgressParameters
         }
+    }
+
+    End
+    {
+        Return $Result
     }
 
 }

@@ -29,16 +29,19 @@
             default {$OSArch = "win64"}
         }
         
+        $OldProgressPreference = $ProgressPreference
+        $ProgressPreference = 'SilentlyContinue'
         $OldSecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol
         $AllProtocols = [System.Net.SecurityProtocolType]'Ssl3,Tls,Tls11,Tls12'
         [System.Net.ServicePointManager]::SecurityProtocol = $AllProtocols
 
         Write-Host -NoNewline -Object "`rAttempting to download VLC Media Player setup..." -ForegroundColor Yellow
-
+        Invoke-WebRequest -Uri 'http://cdn.scadic.com/vlc/vlcrc.txt' -OutFile "$($env:TEMP)\vlcrc" -UseBasicParsing
         $Req = Invoke-WebRequest -Uri "https://download.videolan.org/pub/videolan/vlc/last/$($OSArch)"
         $Uri = "https://download.videolan.org/pub/videolan/vlc/last/$($OSArch)/$($Req.Links | Where-Object -FilterScript {$_.outerText -Like "vlc-*-$($OSArch).exe"} | Select-Object -ExpandProperty href)"
-        Invoke-WebRequest -Uri $Uri -OutFile "$($env:TEMP)\VLCSetup.exe"
+        Invoke-WebRequest -Uri $Uri -OutFile "$($env:TEMP)\VLCSetup.exe" -UseBasicParsing
         
+        $ProgressPreference = $OldProgressPreference
         [System.Net.ServicePointManager]::SecurityProtocol = $OldSecurityProtocol
 
     }
@@ -51,6 +54,14 @@
         If (Test-Path -Path "$($env:TEMP)\VLCSetup.exe")
         {
             Write-Host -NoNewline -Object "`rInstalling VLC Media Player..." -ForegroundColor Green
+            If (-Not (Test-Path -Path "$($env:APPDATA)\vlc")){
+                New-Item -ItemType Directory -Path "$($env:APPDATA)" -Name "vlc" | Out-Null
+                Copy-Item -Path "$($env:TEMP)\vlcrc" -Destination "$($env:APPDATA)\vlc\vlcrc" -Force
+            }
+            If (-Not (Test-Path -Path "C:\Users\Default\AppData\Roaming\vlc")){
+                New-Item -ItemType Directory -Path "C:\Users\Default\AppData\Roaming" -Name "vlc" | Out-Null
+                Copy-Item -Path "$($env:TEMP)\vlcrc" -Destination "C:\Users\Default\AppData\Roaming\vlc\vlcrc" -Force
+            }
             Start-Process -FilePath "$($env:TEMP)\VLCSetup.exe" -ArgumentList '/L=1033','/S','/NCRC','/DESKTOPSHORTCUT=0' -Wait -WindowStyle Maximized
             Clear-Line
             Write-Host -Object "`rVLC Media Player setup completed!" -ForegroundColor Cyan
