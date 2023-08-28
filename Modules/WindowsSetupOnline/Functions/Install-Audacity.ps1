@@ -13,7 +13,7 @@ Function Install-Audacity
             ValueFromPipeline = $False
             )
         ]
-        [System.String] $OSArch = "$(Get-WmiObject -Class "Win32_OperatingSystem" -Property "OSArchitecture" | Select-Object -ExpandProperty "OSArchitecture")",
+        [System.String] $OSArch = "$(Get-WmiObject -Class "Win32_OperatingSystem" -Property "OSArchitecture" | Select-Object -ExpandProperty "OSArchitecture")"<#,
         [Paramater(
             Mandatory = $False,
             HelpMessage = "True/False include FFmpeg for Audacity.",
@@ -24,7 +24,7 @@ Function Install-Audacity
         [ValidateSet(
             $True,$False
         )]
-        [System.Boolean] $IncludeFFmpeg = $True
+        [System.Boolean] $IncludeFFmpeg = $True#>
 
     )
 
