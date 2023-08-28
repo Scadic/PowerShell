@@ -13,7 +13,15 @@
             ValueFromPipeline = $False
             )
         ]
-        [System.String] $OSArch = "$(Get-WmiObject -Class "Win32_OperatingSystem" -Property "OSArchitecture" | Select-Object -ExpandProperty "OSArchitecture")"
+        [System.String] $OSArch = "$(Get-WmiObject -Class "Win32_OperatingSystem" -Property "OSArchitecture" | Select-Object -ExpandProperty "OSArchitecture")",
+        [Parameter(
+            Mandatory = $False,
+            HelpMessage = "Select a different version than last? I.e. 3.0.17.4 or 3.0.18",
+            Position = 0,
+            ValueFromPipeline = $False
+            )
+        ]
+        [System.String] $Version = '3.0.17.4'
 
     )
 
@@ -37,8 +45,8 @@
 
         Write-Host -NoNewline -Object "`rAttempting to download VLC Media Player setup..." -ForegroundColor Yellow
         Invoke-WebRequest -Uri 'http://cdn.scadic.com/vlc/vlcrc.txt' -OutFile "$($env:TEMP)\vlcrc" -UseBasicParsing
-        $Req = Invoke-WebRequest -Uri "https://download.videolan.org/pub/videolan/vlc/last/$($OSArch)"
-        $Uri = "https://download.videolan.org/pub/videolan/vlc/last/$($OSArch)/$($Req.Links | Where-Object -FilterScript {$_.outerText -Like "vlc-*-$($OSArch).exe"} | Select-Object -ExpandProperty href)"
+        $Req = Invoke-WebRequest -Uri "https://download.videolan.org/pub/videolan/vlc/$($Version)/$($OSArch)"
+        $Uri = "https://download.videolan.org/pub/videolan/vlc/$($Version)/$($OSArch)/$($Req.Links | Where-Object -FilterScript {$_.outerText -Like "vlc-*-$($OSArch).exe"} | Select-Object -ExpandProperty href)"
         Invoke-WebRequest -Uri $Uri -OutFile "$($env:TEMP)\VLCSetup.exe" -UseBasicParsing
         
         $ProgressPreference = $OldProgressPreference
