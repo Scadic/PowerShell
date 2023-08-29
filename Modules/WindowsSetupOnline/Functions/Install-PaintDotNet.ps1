@@ -61,7 +61,7 @@ Function Install-PaintDotNet
             Write-Host -NoNewline -Object "`rUnpacking Paint.net setup..." -ForegroundColor Yellow
             Expand-Archive -Path "$($env:TEMP)\PaintDotNetSetup.zip" -DestinationPath "$($env:TEMP)\PaintDotNet"
             Clear-Line
-            Write-Host -NoNewline  -Object "`rInstallin Paint.net..." -ForegroundColor Green
+            Write-Host -NoNewline  -Object "`rInstalling Paint.net..." -ForegroundColor Green
             Start-Process -FilePath $(Get-ChildItem -Path "$($env:TEMP)\PaintDotNet\*.exe" -File | Sort-Object -Property LastWriteTime -Descending | Select-Object -First 1 -ExpandProperty FullName) -ArgumentList ('/auto DESKTOPSHORTCUT=0 JPGPNGBMPEDITOR=1 TGAEDITOR=1' -Split '\s') -Wait
             Clear-Line
             Write-Host -Object "`rPaint.net setup completed!" -ForegroundColor Cyan

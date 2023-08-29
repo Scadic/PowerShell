@@ -51,7 +51,7 @@ Function Install-MSEdge
         
         If (Test-Path -Path "$($env:TEMP)\EdgeSetup.msi")
         {
-            Write-Host -NoNewline -Object "`rInstallin Edge..." -ForegroundColor Green
+            Write-Host -NoNewline -Object "`rInstalling Edge..." -ForegroundColor Green
             Start-Process -FilePath "$($env:WinDir)\System32\msiexec.exe" -ArgumentList '/i',"$($env:TEMP)\EdgeSetup.msi",'DONOTCREATEDESKTOPSHORTCUT=true','DONOTCREATETASKBARSHORTCUT=true','/qn' -Wait
             Clear-Line
             Write-Host -Object "`rEdge setup completed!" -ForegroundColor Cyan
