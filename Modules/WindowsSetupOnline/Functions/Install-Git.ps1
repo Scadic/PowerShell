@@ -36,7 +36,7 @@ Function Install-Git
         [System.Net.ServicePointManager]::SecurityProtocol = $AllProtocols
 
         Write-Host -NoNewline -Object "`rAttempting to download Git setup..." -ForegroundColor Yellow
-        $Uri = Invoke-WebRequest -Uri "https://git-scm.com/download/win" | Select-Object -ExpandProperty Links | Select-Object -ExpandProperty href | Where-Object -FilterScript {$_ -Match "Git\-.{3,6}\-$($OSArch)"} | Where-Object -FilterScript {$_ -NotMatch "Portable"} | Select-Object -First 1
+        $Uri = Invoke-WebRequest -Uri "https://git-scm.com/download/win" | Select-Object -ExpandProperty Links | Select-Object -ExpandProperty href | Where-Object -FilterScript {$_ -Match "Git\-.{3,10}\-$($OSArch)"} | Where-Object -FilterScript {$_ -NotMatch "Portable"} | Select-Object -First 1
         Invoke-WebRequest -Uri $Uri -OutFile "$($env:TEMP)\GitSetup.exe" -UseBasicParsing
         Invoke-WebRequest -Uri "http://cdn.scadic.com/git/git.inf" -OutFile "$($env:TEMP)\Git.inf" -UseBasicParsing
 
