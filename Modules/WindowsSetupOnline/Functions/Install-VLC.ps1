@@ -21,7 +21,7 @@
             ValueFromPipeline = $False
             )
         ]
-        [System.String] $Version = '3.0.17.4'
+        [System.String] $Version = '3.0.19'
 
     )
 
