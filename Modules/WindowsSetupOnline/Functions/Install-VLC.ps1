@@ -21,7 +21,7 @@
             ValueFromPipeline = $False
             )
         ]
-        [System.String] $Version = '3.0.19'
+        [System.String] $Version
 
     )
 
@@ -46,7 +46,8 @@
         Write-Host -NoNewline -Object "`rAttempting to download VLC Media Player setup..." -ForegroundColor Yellow
         Invoke-WebRequest -Uri 'http://cdn.scadic.com/vlc/vlcrc.txt' -OutFile "$($env:TEMP)\vlcrc" -UseBasicParsing
         $Req = Invoke-WebRequest -Uri "https://download.videolan.org/pub/videolan/vlc/$($Version)/$($OSArch)"
-        $Uri = "https://download.videolan.org/pub/videolan/vlc/$($Version)/$($OSArch)/$($Req.Links | Where-Object -FilterScript {$_.outerText -Like "vlc-*-$($OSArch).exe"} | Select-Object -ExpandProperty href)"
+        If ($Version){$Uri = "https://download.videolan.org/pub/videolan/vlc/$($Version)/$($OSArch)/$($Req.Links | Where-Object -FilterScript {$_.outerText -Like "vlc-*-$($OSArch).exe"} | Select-Object -ExpandProperty href)"}
+        Else{$Uri = "https://download.videolan.org/pub/videolan/vlc/last/$($OSArch)/$($Req.Links | Where-Object -FilterScript {$_.outerText -Like "vlc-*-$($OSArch).exe"} | Select-Object -ExpandProperty href)"}
         Invoke-WebRequest -Uri $Uri -OutFile "$($env:TEMP)\VLCSetup.exe" -UseBasicParsing
         
         $ProgressPreference = $OldProgressPreference
