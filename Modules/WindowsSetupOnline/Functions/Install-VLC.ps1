@@ -21,7 +21,7 @@
             ValueFromPipeline = $False
             )
         ]
-        [System.String] $Version
+        [System.String] $Version = "last"
 
     )
 
